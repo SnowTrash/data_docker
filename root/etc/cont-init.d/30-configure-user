@@ -1,0 +1,41 @@
+#!/usr/bin/with-contenv bash
+#
+# Prepare the user's environment.
+
+set -euo pipefail
+
+SYNAPSE_CONFIG_FILENAME="/home/${USER}/.synapseConfig"
+BASHRC_FILENAME="/home/${USER}/.bashrc"
+
+# Enable the user to update R libraries installed by root in Dockerfile
+chown -R ${USER}:${USER} /usr/local/lib/R
+
+# Give ownership of the miniconda envs to the user
+chown -R ${USER}:${USER} /opt/miniconda/envs/*
+
+# Change the shell of the user to bash
+usermod --shell /bin/bash ${USER}
+
+# Create ~/.bashrc
+if [[ ! -f ${BASHRC_FILENAME} ]]; then
+    echo "export PATH=${PATH}" > ${BASHRC_FILENAME}
+
+    chown "${USER}:${USER}" ${BASHRC_FILENAME}
+    chmod 644 ${BASHRC_FILENAME}
+fi
+
+# Create Synapse Python client configuration file
+if [[ ! -z ${SYNAPSE_TOKEN} ]]; then
+    if [ ! -f ${SYNAPSE_CONFIG_FILENAME} ]; then
+        printf "%s\n" \
+            "[authentication]" \
+            "authtoken=${SYNAPSE_TOKEN}" | tee -a ${SYNAPSE_CONFIG_FILENAME} >/dev/null
+
+        chown "${USER}:${USER}" ${SYNAPSE_CONFIG_FILENAME}
+        chmod 600 ${SYNAPSE_CONFIG_FILENAME}
+    fi
+fi
+
+# Fix sudo: setrlimit(RLIMIT_CORE): Operation not permitted
+# https://github.com/sudo-project/sudo/issues/42#issuecomment-659253293
+echo "Set disable_coredump false" >> /etc/sudo.conf
