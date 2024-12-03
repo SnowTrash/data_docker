@@ -1,0 +1,16 @@
+En el archivo *-CSV.zip que acaba de descargar encontrará dos archivos con extensión CSV, los cuales contienen:
+
+*-CSV-original.csv
+
+La información original del proyecto en campos del estándar Darwin Core.
+
+*-CSV-validado.csv
+
+La información validada por CONABIO en campos del estándar Darwin Core.
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+La versión de Darwin Core usada es la 1.4.
+
+Para mayor información acerca de DarwinCore puede consultar la siguiente página:
+http://rs.tdwg.org/dwc/terms/index.htm
