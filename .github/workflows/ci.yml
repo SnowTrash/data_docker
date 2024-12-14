@@ -119,7 +119,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build image
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v5
       with:
         context: .
         file: Dockerfile
@@ -152,7 +152,7 @@ jobs:
     - name: Push image
       if: steps.prep.outputs.push_image == 'true'
       id: docker_push
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v5
       with:
         context: .
         file: Dockerfile
