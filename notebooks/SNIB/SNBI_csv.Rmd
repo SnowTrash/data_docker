@@ -1,7 +1,15 @@
 ---
 title: "Análisis de Datos CSV con R Notebook"
-output: html_notebook
+output: 
+  html_document:
+    df_print: paged
+    code_fold: show
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
 ---
+
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
 
@@ -9,6 +17,7 @@ Try executing this chunk by clicking the *Run* button within the chunk or by pla
 
 ```{r}
 # Cargar bibliotecas necesarias
+install.packages("tidyverse")
 library(tidyverse)
 
 
@@ -18,14 +27,14 @@ library(tidyverse)
 # SNIB-S131-CSV
 
 # Cargar el archivo CSV
-datos1 <- read_csv("~/awesome-project/notebooks/SNIB-P083-CSV/SNIB-P083-CSV-Validado.csv")
+datos1 <- read_csv("~/awesome-project/notebooks/SNIB/SNIB-P083-CSV/SNIB-P083-CSV-Validado.csv")
 
 # Cargar el archivo CSV
-datos2 <- read_csv("~/awesome-project/notebooks/SNIB-S131-CSV/SNIB-S131-CSV-Validado.csv")
+datos2 <- read_csv("~/awesome-project/notebooks/SNIB/SNIB-S131-CSV/SNIB-S131-CSV-Validado.csv")
 
 
 # Cargar el archivo CSV
-datos <- read_csv("~/awesome-project/notebooks/SNIB-AE001-CSV/SNIB-AE001-CSV-Validado.csv")
+datos <- read_csv("~/awesome-project/notebooks/SNIB/SNIB-AE001-CSV/SNIB-AE001-CSV-Validado.csv")
 
 # Mostrar las primeras filas
 head(datos)
@@ -62,7 +71,7 @@ datos %>%
 El institutpo de Biologia de la UNAM nos regalo 334 entradas al dataset
 ```{r}
 datos %>% 
-  ggplot(aes(x = nombreInstitucion_snib)) +
+  ggplot(aes(x = phylum_snib)) +
   geom_bar() +
   coord_flip() +
   theme_minimal()
@@ -76,13 +85,41 @@ datos %>%
 Se cuentan con un total aproximado de 520 filas?
 
 ```{r}
-datos %>%
-  ggplot(aes(x = clase_snib, fill = reino_snib)) +
-  geom_bar() +
-  coord_flip() +
-  theme_minimal() +
-  labs(title = "Distribución de clases por reino",
-       x = "Clase", y = "Frecuencia")
+clasificacion <- datos %>%
+  group_by(reino_snib, phylum_snib, clase_snib, orden_snib, familia_snib, genero_snib) %>%
+  summarise(Especies_Diferentes = n_distinct(nombreCientifico_snib)) %>%
+  arrange(reino_snib, phylum_snib, clase_snib, orden_snib, familia_snib, genero_snib)
+
+print(clasificacion)
 ```
 
+```{r}
+library(dplyr)
 
+summary_data <- datos %>%
+  group_by(reino_snib, phylum_snib, clase_snib, orden_snib, familia_snib, condadoMunicipio_snib) %>%
+  summarise(count = n(), .groups = "drop")
+
+```
+Esto es el primer dataset que se tiene, se revisaran los otros 2 dataset
+
+```{r}
+print(summary_data)
+```
+
+Este es el dataset 2 ---
+
+``` {r}
+summary_data1 <- datos1 %>%
+  group_by(reino_snib, phylum_snib, clase_snib, orden_snib, familia_snib, condadoMunicipio_snib) %>%
+  summarise(count = n(), .groups = "drop")
+print(summary_data1)
+```
+
+Dataset 3
+``` {r}
+summary_data2 <- datos2 %>%
+  group_by(reino_snib, phylum_snib, clase_snib, orden_snib, familia_snib, condadoMunicipio_snib) %>%
+  summarise(count = n(), .groups = "drop")
+print(summary_data2)
+```
